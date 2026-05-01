@@ -1,21 +1,26 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-width=1.0">
-    <title>A Nemesség Ragyogása | Ékszer Kollekció</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radiance of Nobility | Jewelry Collection</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- ALAPVETŐ STÍLUSOK ÉS VÁLTOZÓK --- */
+        /* --- CORE STYLES AND VARIABLES --- */
         :root {
             --bg-color: #0b0b0f;
             --card-bg: rgba(20, 20, 25, 0.7);
             --text-main: #ffffff;
             --text-muted: #a0a0ab;
-            --neon-green: #14F195;
             --neon-blue: #00f0ff;
-            --neon-purple: #9945FF;
-            --gradient: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+            
+            /* Dynamic Theme Variables (Default: Male/Green) */
+            --theme-color: #14F195;
+            --theme-bg-light: rgba(20, 241, 149, 0.1);
+            --theme-border-glow: rgba(20, 241, 149, 0.3);
+            --theme-shadow: rgba(20, 241, 149, 0.4);
+            
+            --gradient: linear-gradient(135deg, var(--neon-blue), var(--theme-color));
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,10 +31,87 @@
             color: var(--text-main);
             line-height: 1.6;
             min-height: 100vh;
-            background-image: radial-gradient(circle at top center, rgba(20, 241, 149, 0.05) 0%, transparent 50%);
+            overflow: hidden; /* Prevent scrolling until gender is selected */
+            background-image: radial-gradient(circle at top center, var(--theme-bg-light) 0%, transparent 50%);
         }
 
-        /* --- FEJLÉC ÉS NAVIGÁCIÓ --- */
+        /* --- WELCOME MODAL --- */
+        #welcome-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 11, 15, 0.95);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 550px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .modal-content p {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .gender-btns {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .gender-btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-male {
+            background: #14F195;
+            color: #000;
+            box-shadow: 0 0 20px rgba(20, 241, 149, 0.3);
+        }
+
+        .btn-female {
+            background: #FF1493;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+        }
+
+        .gender-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn-male:hover { box-shadow: 0 0 30px rgba(20, 241, 149, 0.6); }
+        .btn-female:hover { box-shadow: 0 0 30px rgba(255, 20, 147, 0.6); }
+
+        /* --- HEADER AND NAVIGATION --- */
         header {
             text-align: center;
             padding: 4rem 1rem 2rem;
@@ -39,6 +121,12 @@
             background: rgba(11, 11, 15, 0.85);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.4s cubic-bezier(0.3, 0, 0.2, 1);
+        }
+
+        /* Class added via JS on scroll down to hide header */
+        header.nav-hidden {
+            transform: translateY(-100%);
         }
 
         header h1 {
@@ -94,10 +182,15 @@
             background: var(--gradient);
             color: #000;
             border: none;
-            box-shadow: 0 0 20px rgba(20, 241, 149, 0.4);
+            box-shadow: 0 0 20px var(--theme-shadow);
+        }
+        
+        /* Exception for female theme active button text color for better contrast */
+        body.theme-female nav button.active {
+            color: #fff;
         }
 
-        /* --- TARTALOM SZAKASZOK --- */
+        /* --- CONTENT SECTIONS --- */
         main {
             max-width: 1280px;
             margin: 0 auto;
@@ -119,7 +212,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- KEZDŐLAP (KOLLÁZS) --- */
+        /* --- HOME (COLLAGE) --- */
         .collage {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -140,12 +233,12 @@
         .collage img:hover {
             transform: scale(1.03);
             filter: grayscale(0%) brightness(1.1);
-            border-color: var(--neon-green);
-            box-shadow: 0 0 25px rgba(20, 241, 149, 0.3);
+            border-color: var(--theme-color);
+            box-shadow: 0 0 25px var(--theme-border-glow);
             z-index: 2;
         }
 
-        /* --- KÁRTYA ELRENDEZÉS (TERMÉKEK) --- */
+        /* --- CARD LAYOUT (PRODUCTS) --- */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -175,8 +268,8 @@
 
         .card:hover {
             transform: translateY(-8px);
-            border-color: rgba(20, 241, 149, 0.3);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 241, 149, 0.15);
+            border-color: var(--theme-border-glow);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--theme-bg-light);
         }
 
         .card:hover::before { opacity: 1; }
@@ -222,13 +315,13 @@
         }
 
         .card-weight {
-            background: rgba(20, 241, 149, 0.1);
-            color: var(--neon-green);
+            background: var(--theme-bg-light);
+            color: var(--theme-color);
             font-weight: 800;
             font-size: 0.9rem;
             padding: 0.4rem 0.8rem;
             border-radius: 6px;
-            border: 1px solid rgba(20, 241, 149, 0.2);
+            border: 1px solid var(--theme-bg-light);
             white-space: nowrap;
         }
 
@@ -238,7 +331,7 @@
             line-height: 1.6;
         }
 
-        /* --- RESZPONSZIVITÁS MOBILRA --- */
+        /* --- RESPONSIVE FOR MOBILE --- */
         @media (max-width: 768px) {
             header h1 { font-size: 2.2rem; }
             main { padding: 2rem 1rem; }
@@ -252,198 +345,210 @@
             .collage { grid-template-columns: 1fr; }
             .card-header { flex-direction: column; }
             .card-weight { margin-top: 0.5rem; }
+            .gender-btns { flex-direction: column; width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Nemesség Ragyogása</h1>
-        <p>A Teljes 88 Grammos Kollekció</p>
+    <div id="welcome-modal">
+        <div class="modal-content">
+            <h2>Welcome to Radiance!</h2>
+            <p>Discover our meticulously organized jewelry collection. Browse through our exquisite pieces, each presented with high-quality images, distinct names, precise weights, and detailed descriptions.<br><br>To give you the best experience, please tell us:</p>
+            <div class="gender-btns">
+                <button class="gender-btn btn-male" onclick="chooseGender('male')">I am Male</button>
+                <button class="gender-btn btn-female" onclick="chooseGender('female')">I am Female</button>
+            </div>
+        </div>
+    </div>
+
+    <header id="main-header">
+        <h1>Radiance of Nobility</h1>
+        <p>The Complete 88 Gram Collection</p>
         <nav>
-            <button class="tab-btn active" data-target="kezdolap">Kezdőlap</button>
-            <button class="tab-btn" data-target="medal">Medálok</button>
-            <button class="tab-btn" data-target="fulbevalo">Fülbevalók</button>
-            <button class="tab-btn" data-target="karkoto">Karkötők</button>
-            <button class="tab-btn" data-target="nyaklanc">Nyakláncok</button>
+            <button class="tab-btn active" data-target="home">Home</button>
+            <button class="tab-btn" data-target="pendants">Pendants</button>
+            <button class="tab-btn" data-target="earrings">Earrings</button>
+            <button class="tab-btn" data-target="bracelets">Bracelets</button>
+            <button class="tab-btn" data-target="necklaces">Necklaces</button>
         </nav>
     </header>
 
     <main>
-        <section id="kezdolap" class="tab-content active">
+        <section id="home" class="tab-content active">
             <div class="collage">
-                <img src="2935.jpg" alt="Harmónia Sugara">
-                <img src="2940.jpg" alt="Csillagközi Barát">
-                <img src="2928.jpg" alt="Arany Fonat">
-                <img src="2927.jpg" alt="Klasszikus Ív">
-                <img src="2929.jpg" alt="Égi Ragyogás">
-                <img src="2930.jpg" alt="Végtelen Elegancia">
-                <img src="2931.jpg" alt="Szívvel Pecsételve">
-                <img src="2932.jpg" alt="Időtlen Kapcsolat">
-                <img src="2933.jpg" alt="Monogram Elegancia">
-                <img src="2934.jpg" alt="A Remény Sugara">
-                <img src="2937.jpg" alt="Filigrán Művészet">
-                <img src="2938.jpg" alt="Birodalmi Fonat Nyaklánc">
-                <img src="2939.jpg" alt="Birodalmi Fonat Karkötő">
-                <img src="2936.jpg" alt="Sárkány Ereje">
+                <img src="2935.jpg" alt="Ray of Harmony">
+                <img src="2940.jpg" alt="Interstellar Friend">
+                <img src="2928.jpg" alt="Golden Braid">
+                <img src="2927.jpg" alt="Classic Arc">
+                <img src="2929.jpg" alt="Celestial Radiance">
+                <img src="2930.jpg" alt="Infinite Elegance">
+                <img src="2931.jpg" alt="Sealed with a Heart">
+                <img src="2932.jpg" alt="Timeless Connection">
+                <img src="2933.jpg" alt="Monogram Elegance">
+                <img src="2934.jpg" alt="Ray of Hope">
+                <img src="2937.jpg" alt="Filigree Art">
+                <img src="2938.jpg" alt="Imperial Braid Necklace">
+                <img src="2939.jpg" alt="Imperial Braid Bracelet">
+                <img src="2936.jpg" alt="Dragon's Power">
             </div>
         </section>
 
-        <section id="medal" class="tab-content">
+        <section id="pendants" class="tab-content">
             <div class="product-grid">
                 <div class="card">
-                    <div class="card-img-container"><img src="2935.jpg" alt="Harmónia Sugara"></div>
+                    <div class="card-img-container"><img src="2935.jpg" alt="Ray of Harmony"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Harmónia Sugara" – Yin-Yang</h3>
+                            <h3 class="card-title">"Ray of Harmony" – Yin-Yang</h3>
                             <span class="card-weight">10 g</span>
                         </div>
-                        <p class="card-desc">Ez a különleges, nyolcszögletű medál a belső egyensúly és a sugárzó elegancia jelképe. A precízen megmunkált, bordázott felület gyönyörűen töri meg a fényt.</p>
+                        <p class="card-desc">This special octagonal pendant is a symbol of inner balance and radiant elegance. The precisely crafted, ribbed surface beautifully refracts the light.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2940.jpg" alt="Csillagközi Barát"></div>
+                    <div class="card-img-container"><img src="2940.jpg" alt="Interstellar Friend"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Csillagközi Barát" – Stitch</h3>
+                            <h3 class="card-title">"Interstellar Friend" – Stitch</h3>
                             <span class="card-weight">> 3 g</span>
                         </div>
-                        <p class="card-desc">Ki mondta, hogy az ékszer nem lehet játékos? Ez az aprólékosan kidolgozott figura a vidámságot és az egyediséget csempészi a mindennapokba.</p>
+                        <p class="card-desc">Who says jewelry can't be playful? This meticulously crafted figure brings joy and uniqueness to your everyday life.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="fulbevalo" class="tab-content">
+        <section id="earrings" class="tab-content">
             <div class="product-grid">
                 <div class="card">
-                    <div class="card-img-container"><img src="2928.jpg" alt="Arany Fonat"></div>
+                    <div class="card-img-container"><img src="2928.jpg" alt="Golden Braid"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Arany Fonat" – Csavart Karika</h3>
+                            <h3 class="card-title">"Golden Braid" – Twisted Hoop</h3>
                             <span class="card-weight">10 g</span>
                         </div>
-                        <p class="card-desc">A gazdagon csavart textúra és a selyemfényű kidolgozás rendkívüli eleganciát kölcsönöz viselőjének. Igazi "statement" ékszer.</p>
+                        <p class="card-desc">The richly twisted texture and silky finish lend extraordinary elegance to its wearer. A true statement piece.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2927.jpg" alt="Klasszikus Ív"></div>
+                    <div class="card-img-container"><img src="2927.jpg" alt="Classic Arc"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Klasszikus Ív" – Finom Karika</h3>
+                            <h3 class="card-title">"Classic Arc" – Fine Hoop</h3>
                             <span class="card-weight">> 3 g</span>
                         </div>
-                        <p class="card-desc">Minimalista dizájnja miatt bármilyen öltözékhez kiválóan illik, miközben diszkrét csillogást ad az arcnak.</p>
+                        <p class="card-desc">Its minimalist design perfectly complements any outfit while adding a discreet sparkle to the face.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2929.jpg" alt="Égi Ragyogás"></div>
+                    <div class="card-img-container"><img src="2929.jpg" alt="Celestial Radiance"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Égi Ragyogás" – Sugaras Csillag</h3>
+                            <h3 class="card-title">"Celestial Radiance" – Radiant Star</h3>
                             <span class="card-weight">> 3 g</span>
                         </div>
-                        <p class="card-desc">Játékos függő fülbevaló, amelyen a csillag motívumok sugaras vésése minden mozdulatnál megtöri a fényt.</p>
+                        <p class="card-desc">Playful dangling earrings where the radial engraving of the star motifs catches the light with every movement.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2930.jpg" alt="Végtelen Elegancia"></div>
+                    <div class="card-img-container"><img src="2930.jpg" alt="Infinite Elegance"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Végtelen Elegancia" – Szimbólum</h3>
+                            <h3 class="card-title">"Infinite Elegance" – Symbol</h3>
                             <span class="card-weight">> 3 g</span>
                         </div>
-                        <p class="card-desc">Finoman megmunkált, szemcsés felületű fülbevaló. Apró mérete ellenére különleges textúrája magára vonzza a tekintetet.</p>
+                        <p class="card-desc">Finely crafted earrings with a textured surface. Despite their small size, their unique texture draws the eye.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="karkoto" class="tab-content">
+        <section id="bracelets" class="tab-content">
             <div class="product-grid">
                 <div class="card">
-                    <div class="card-img-container"><img src="2931.jpg" alt="Szívvel Pecsételve"></div>
+                    <div class="card-img-container"><img src="2931.jpg" alt="Sealed with a Heart"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Szívvel Pecsételve" – T-kapcsos</h3>
+                            <h3 class="card-title">"Sealed with a Heart" – T-clasp</h3>
                             <span class="card-weight">10 g</span>
                         </div>
-                        <p class="card-desc">Vastagabb láncszemek és stílusos T-kapocs. A lógó szív medál és a gravírozott kör motívum személyessé teszi.</p>
+                        <p class="card-desc">Features thicker chain links and a stylish T-clasp. The dangling heart pendant and engraved circle motif add a personal touch.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2932.jpg" alt="Időtlen Kapcsolat"></div>
+                    <div class="card-img-container"><img src="2932.jpg" alt="Timeless Connection"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Időtlen Kapcsolat" – Végtelen Jel</h3>
+                            <h3 class="card-title">"Timeless Connection" – Infinity Sign</h3>
                             <span class="card-weight">3 g</span>
                         </div>
-                        <p class="card-desc">A soha véget nem érő szeretet jelképe. Diszkrét mérete miatt kiválóan alkalmas több karkötővel való együttes viselésre.</p>
+                        <p class="card-desc">The symbol of never-ending love. Its discreet size makes it perfect for stacking with other bracelets.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2933.jpg" alt="Monogram Elegancia"></div>
+                    <div class="card-img-container"><img src="2933.jpg" alt="Monogram Elegance"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Monogram Elegancia" – 'M' Medálos</h3>
+                            <h3 class="card-title">"Monogram Elegance" – 'M' Pendant</h3>
                             <span class="card-weight">3 g</span>
                         </div>
-                        <p class="card-desc">Egy határozott vonalvezetésű 'M' betűt hordoz, amely egyszerre modern és klasszikus ajándék.</p>
+                        <p class="card-desc">Carries a distinctly lined letter 'M', making it a gift that is both modern and classic.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2934.jpg" alt="A Remény Sugara"></div>
+                    <div class="card-img-container"><img src="2934.jpg" alt="Ray of Hope"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"A Remény Sugara" – Hope Feliratos</h3>
+                            <h3 class="card-title">"Ray of Hope" – Hope Inscription</h3>
                             <span class="card-weight">> 3 g</span>
                         </div>
-                        <p class="card-desc">Könnyed, inspiráló darab, amely minden nap emlékeztet a pozitív gondolatok erejére egy apró, csillogó kővel.</p>
+                        <p class="card-desc">A light, inspiring piece that reminds you of the power of positive thoughts every day, detailed with a tiny sparkling stone.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2937.jpg" alt="Filigrán Művészet"></div>
+                    <div class="card-img-container"><img src="2937.jpg" alt="Filigree Art"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Filigrán Művészet" – Antik Hatású</h3>
+                            <h3 class="card-title">"Filigree Art" – Antique Effect</h3>
                             <span class="card-weight">3 g</span>
                         </div>
-                        <p class="card-desc">Az áttört, csipkeszerű kidolgozás és a texturált lánc egyfajta nemesi eleganciát sugároz.</p>
+                        <p class="card-desc">The openwork, lace-like detailing and textured chain exude a kind of noble, vintage elegance.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="nyaklanc" class="tab-content">
+        <section id="necklaces" class="tab-content">
             <div class="product-grid">
                 <div class="card">
-                    <div class="card-img-container"><img src="2938.jpg" alt="Birodalmi Fonat Nyaklánc"></div>
+                    <div class="card-img-container"><img src="2938.jpg" alt="Imperial Braid Necklace"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Birodalmi Fonat" – Masszív Lánc</h3>
+                            <h3 class="card-title">"Imperial Braid" – Massive Chain</h3>
                             <span class="card-weight">24 g</span>
                         </div>
-                        <p class="card-desc">A kollekció legtekintélyesebb darabja. Ez a sűrű szövésű, lapított fonatú lánc erőt és stabilitást sugároz.</p>
+                        <p class="card-desc">The most prestigious piece of the collection. This densely woven, flattened braided chain radiates power and stability.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2939.jpg" alt="Birodalmi Fonat Karkötő"></div>
+                    <div class="card-img-container"><img src="2939.jpg" alt="Imperial Braid Bracelet"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Birodalmi Fonat" – Karkötő</h3>
+                            <h3 class="card-title">"Imperial Braid" – Bracelet</h3>
                             <span class="card-weight">10 g</span>
                         </div>
-                        <p class="card-desc">A nagy nyaklánc tökéletes kiegészítője szettben. Ugyanaz a precíz, csavart technika jellemzi, masszív szív alakú záródással.</p>
+                        <p class="card-desc">The perfect companion to the large necklace in a set. It features the same precise, twisted technique with a solid heart-shaped clasp.</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-img-container"><img src="2936.jpg" alt="Sárkány Ereje"></div>
+                    <div class="card-img-container"><img src="2936.jpg" alt="Dragon's Power"></div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">"Sárkány Ereje" – Dombornyomott</h3>
+                            <h3 class="card-title">"Dragon's Power" – Embossed</h3>
                             <span class="card-weight">7 g</span>
                         </div>
-                        <p class="card-desc">Misztikus és erőteljes összeállítás. A finoman texturált láncon egy részletgazdag sárkány motívum függ.</p>
+                        <p class="card-desc">A mystical and powerful composition. A highly detailed dragon motif hangs from a finely textured chain.</p>
                     </div>
                 </div>
             </div>
@@ -451,26 +556,73 @@
     </main>
 
     <script>
+        // --- Modal & Theme Logic ---
+        const modal = document.getElementById('welcome-modal');
+        const root = document.documentElement;
+
+        window.chooseGender = function(gender) {
+            if (gender === 'male') {
+                root.style.setProperty('--theme-color', '#14F195');
+                root.style.setProperty('--theme-bg-light', 'rgba(20, 241, 149, 0.1)');
+                root.style.setProperty('--theme-border-glow', 'rgba(20, 241, 149, 0.3)');
+                root.style.setProperty('--theme-shadow', 'rgba(20, 241, 149, 0.4)');
+                document.body.classList.remove('theme-female');
+            } else if (gender === 'female') {
+                root.style.setProperty('--theme-color', '#FF1493'); // Neon Pink
+                root.style.setProperty('--theme-bg-light', 'rgba(255, 20, 147, 0.1)');
+                root.style.setProperty('--theme-border-glow', 'rgba(255, 20, 147, 0.3)');
+                root.style.setProperty('--theme-shadow', 'rgba(255, 20, 147, 0.4)');
+                document.body.classList.add('theme-female');
+            }
+            
+            // Fade out modal and restore scrolling
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto'; 
+            }, 500);
+        };
+
+        // --- Tabs Logic ---
         document.addEventListener('DOMContentLoaded', () => {
             const buttons = document.querySelectorAll('.tab-btn');
             const contents = document.querySelectorAll('.tab-content');
 
             buttons.forEach(button => {
                 button.addEventListener('click', () => {
-                    // Aktív gomb eltávolítása mindenkiről
                     buttons.forEach(btn => btn.classList.remove('active'));
-                    // Kattintott gomb aktívvá tétele
                     button.classList.add('active');
 
-                    // Tartalom elrejtése
                     contents.forEach(content => content.classList.remove('active'));
                     
-                    // Megfelelő tartalom megjelenítése
                     const targetId = button.getAttribute('data-target');
                     document.getElementById(targetId).classList.add('active');
                 });
             });
         });
+
+        // --- Smart Header (Hide on scroll down, show on scroll up) ---
+        let lastScrollTop = 0;
+        const header = document.getElementById('main-header');
+
+        window.addEventListener('scroll', () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Only apply effect if scrolled down a bit to avoid jitter at the top
+            if (scrollTop > 80) {
+                if (scrollTop > lastScrollTop) {
+                    // Scrolling down
+                    header.classList.add('nav-hidden');
+                } else {
+                    // Scrolling up
+                    header.classList.remove('nav-hidden');
+                }
+            } else {
+                header.classList.remove('nav-hidden');
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+        }, false);
     </script>
 </body>
 </html>
