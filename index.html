@@ -377,6 +377,18 @@
             to { transform: scale(1); opacity: 1; }
         }
 
+        /* --- SOLD ITEMS STYLING --- */
+        .card.sold {
+            opacity: 0.7;
+            filter: grayscale(100%);
+        }
+
+        .card.sold .sold-price {
+            background: #ff4d4d;
+            color: #ffffff;
+            border: none;
+        }
+
         /* --- RESPONSIVE FOR MOBILE --- */
         @media (max-width: 768px) {
             header h1 { font-size: 2.2rem; }
@@ -631,26 +643,31 @@
                         <p class="card-desc">A timeless, dainty anchor chain bracelet for a subtle and elegant sparkle on the wrist.</p>
                     </div>
                 </div>
-                <div class="card">
+
+                <!-- Urban Edge Curb Bracelet SOLD -->
+                <div class="card sold">
                     <div class="card-img-container"><img src="urban-edge-curb-bracelet.jpg" alt="Urban Edge Curb Bracelet"></div>
                     <div class="card-content">
                         <div class="card-header">
                             <h3 class="card-title">"Urban Edge Curb Bracelet" – Stylish</h3>
-                            <span class="card-weight">1.91 g</span>
+                            <span class="card-weight sold-price">SOLD 16 808 PHP</span>
                         </div>
                         <p class="card-desc">A stylish curb chain bracelet with a classic polished finish for a modern, sleek look.</p>
                     </div>
                 </div>
-                <div class="card">
+
+                <!-- Nautical Braid Bracelet SOLD -->
+                <div class="card sold">
                     <div class="card-img-container"><img src="nautical-braid-bracelet.jpg" alt="Nautical Braid Bracelet"></div>
                     <div class="card-content">
                         <div class="card-header">
                             <h3 class="card-title">"Nautical Braid Bracelet" – Rope Style</h3>
-                            <span class="card-weight">2.39 g</span>
+                            <span class="card-weight sold-price">SOLD 90 000 HUF</span>
                         </div>
                         <p class="card-desc">A sturdy and stylish rope chain bracelet, evoking a sense of classic maritime elegance and strength.</p>
                     </div>
                 </div>
+
                 <div class="card">
                     <div class="card-img-container"><img src="clover-bracelet.jpg" alt="Luck & Elegance Clover Bracelet"></div>
                     <div class="card-content">
@@ -836,3 +853,4 @@
     </script>
 </body>
 </html>
+                 
